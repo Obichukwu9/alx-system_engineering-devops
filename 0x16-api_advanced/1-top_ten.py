@@ -7,12 +7,27 @@ def top_ten(subreddit):
     of the subreddit"""
     import requests
 
-    sub_info = requests.get("https://www.reddit.com/r/{}/hot.json?limit=10"
-                            .format(subreddit),
-                            headers={"User-Agent": "My-User-Agent"},
-                            allow_redirects=False)
-    if sub_info.status_code >= 300:
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
+    headers = {"User-Agent": "My-User-Agent"}
+
+    try:
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        response.raise_for_status()
+
+        if response.status_code == 200:
+            data = response.json().get("data", {}).get("children", [])
+
+            if not data:
+                print('None')
+            else:
+                for child in data:
+                    print(child.get("data").get("title"))
+        else:
+            print('None')
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
         print('None')
-    else:
-        [print(child.get("data").get("title"))
-         for child in sub_info.json().get("data").get("children")]
+
+if __name__ == "__main__":
+    subreddit_name = input("Enter the subreddit name: ")
+    top_ten(subreddit_name)]
