@@ -1,21 +1,23 @@
 #!/usr/bin/python3
-""" Exporting csv files"""
-import json
+"""
+a function that queries the Reddit API and
+returns the number of subscribers (not active users, total subscribers)
+for a given subreddit. If an invalid subreddit is given,
+the function should return 0.
+"""
 import requests
-import sys
 
 
 def number_of_subscribers(subreddit):
-    """Read reddit API and return number subscribers """
-    username = 'ledbag123'
-    password = 'Reddit72'
-    user_pass_dict = {'user': username, 'passwd': password, 'api_type': 'json'}
-    headers = {'user-agent': '/u/ledbag123 API Python for Holberton School'}
-    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
-    client = requests.session()
-    client.headers = headers
-    r = client.get(url, allow_redirects=False)
-    if r.status_code == 200:
-        return (r.json()["data"]["subscribers"])
-    else:
-        return(0)
+    if subreddit is None or type(subreddit) is not str:
+        return 0
+
+    base_url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
+    headers = {'User-Agent': '0x16-api_advanced_project'}
+    r = requests.get(base_url, headers=headers, allow_redirects=False).json()
+
+    if r.get('data') is None:
+        return 0
+
+    subscribers = r.get('data').get('subscribers')
+    return subscribers
