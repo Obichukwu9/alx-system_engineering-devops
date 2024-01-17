@@ -1,33 +1,23 @@
 #!/usr/bin/python3
-"""Module for task 1"""
+"""
+Queries the Reddit API and prints the titles of the first 10 hot posts listed
+for a given subreddit.
+"""
+import requests
 
 
 def top_ten(subreddit):
-    """Queries the Reddit API and returns the top 10 hot posts
-    of the subreddit"""
-    import requests
-
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
-    headers = {"User-Agent": "My-User-Agent"}
-
+    """
+    Queries the Reddit API and prints the titles of the first 10 hot posts
+    listed for a given subreddit.
+    """
+    url = 'https://www.reddit.com/r/{}/hot.json?show="all"&limit=10'.format(
+        subreddit)
+    headers = {'User-Agent': 'Python/1.0(Holberton School 0x16)'}
+    response = requests.get(url, headers=headers)
     try:
-        response = requests.get(url, headers=headers, allow_redirects=False)
-        response.raise_for_status()
-
-        if response.status_code == 200:
-            data = response.json().get("data", {}).get("children", [])
-
-            if not data:
-                print('None')
-            else:
-                for child in data:
-                    print(child.get("data").get("title"))
-        else:
-            print('None')
-    except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
-        print('None')
-
-if __name__ == "__main__":
-    subreddit_name = input("Enter the subreddit name: ")
-    top_ten(subreddit_name)]
+        top_ten = response.json()['data']['children']
+        for post in top_ten:
+            print(post['data']['title'])
+    except KeyError:
+        print("None")
